@@ -37,9 +37,9 @@ int main()
 		num[k]=rand()%100;
 		printf("  %2d", num[k]);
 	}
-//	pnt_sort(num,n);
-//	puts("\n\n Sorted random numbers");
-//	print_out(num, n);
+	pnt_sort(num,n);
+	puts("\n\n Sorted random numbers");
+	print_out(num, n);
 
 	pnt_mean_value(num,n,&mean);
 
