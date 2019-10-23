@@ -26,7 +26,7 @@ int main()
 		{
 		case 1:
 		{
-			puts("\nEnter your Message: ");          				 // test value2: 1DerBaw 52H lw7x
+			printf("\nEnter your Message: ");          				 // test value2: 1DerBaw 52H lw7x
 			setbuf(stdin,NULL);		     									// answer: ifY4XM92XBSF8
 			// filter user input
 			input_len = input_filter(user_input);
