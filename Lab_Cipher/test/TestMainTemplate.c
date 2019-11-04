@@ -8,7 +8,7 @@
 #include "SimpleCTester.h"
 
 /// supply path to .h file holding function headers of your test target
-#include "C:\YA C programming\GitTry\Lab_Cipher\src\Cipher.h"
+#include "C:\YA C programming\C-programming course\Lab_Cipher\src\Cipher.h"
 
 SimpleTest_Initialize()					// Counters for all tests are reset here
 

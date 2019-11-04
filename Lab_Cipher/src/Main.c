@@ -10,7 +10,6 @@
 #include"Cipher.h"
 
 
-
 int main()
 {
 	_Bool invalid_input_flag = false;

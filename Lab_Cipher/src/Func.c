@@ -37,7 +37,7 @@ int letters_evaluate(char input[])
 			if(input[letter_index]== 'z')
 				input[letter_index]='A';
 			else
-				input[letter_index] -= S_2_next_C;
+				input[letter_index] = toupper(input[letter_index])+1;    //	input[letter_index] -= S_2_next_C;
 		}
 		letter_index++;
 	}
@@ -53,11 +53,11 @@ void digits_modify(char input[], int letters)
 		{
 
 			input[digit_index] += letters;
-			if(input[digit_index]>ASCII_NINE)
+			if(input[digit_index]>'9')
 			{
-				input[digit_index]%=(ASCII_NINE+1);
+				input[digit_index]%=('9'+1);
 				input[digit_index]%=10;
-				input[digit_index]+=ASCII_ZERO;
+				input[digit_index]+='0';
 			}
 		}
 		digit_index++;
@@ -72,7 +72,7 @@ void space_replace(char input[])
 	{
 		if(input[space_index] == ' ')
 		{
-			input[space_index] = space_index + ASCII_a;
+			input[space_index] = space_index + 'a';
 			space_counter++;
 		}
 		space_index++;
@@ -116,7 +116,7 @@ int decrypt(char input[])
 		// change lower index ---------------------------------------------------------------------------------------
 		for(int i=lower_counter-1;i>=0;i--)
 		{
-					space_pos=(input[i]%(ASCII_a-1));
+					space_pos=(input[i]%('a'-1));
 				for(push2last=i; push2last<(de_input_index-space_pos);push2last++)
 				{
 					index_changer = input[push2last+1];
@@ -140,7 +140,7 @@ int decrypt(char input[])
 				letter_count++;
 			}
 			else{
-				input[i] += S_2_next_C;
+				input[i] = tolower(input[i])-1;
 				letter_count++;
 			}
 		}
@@ -149,8 +149,8 @@ int decrypt(char input[])
 	for(int i=0;i<=de_input_index; i++){
 		if(isdigit(input[i])){
 			input[i] -= letter_count;
-			while(input[i]<ASCII_ZERO){
-				input[i]=ASCII_NINE-(ASCII_ZERO-input[i])+1 ;
+			while(input[i]<'0'){
+				input[i]='9'-('0'-input[i])+1 ;
 			}
 		}
 	}

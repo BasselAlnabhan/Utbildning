@@ -7,11 +7,8 @@
 
 #ifndef CIPHER_H_
 #define CIPHER_H_
+
 #define MAX_LENGTH 25
-#define S_2_next_C 31
-#define ASCII_NINE 57
-#define ASCII_ZERO 48
-#define ASCII_a 97
 
 /*used to filter the user input
  * input - a char array to hold the filtered input
