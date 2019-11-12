@@ -40,7 +40,6 @@ void pnt_mean_value(int ifield[],int n, float *mean_value)
 	*mean_value = (float)sum/n;
 }
 
-
 void min_max_values(int ifield[], int n, int *min, int *max)
 {
 	int *m;

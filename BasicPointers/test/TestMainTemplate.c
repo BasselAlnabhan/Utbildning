@@ -8,7 +8,7 @@
 #include "SimpleCTester.h"
 
 /// supply path to .h file holding function headers of your test target
-#include "C:\YA C programming\GitTry\BasicPointers\src\pointers.h"
+#include "C:\YA C programming\C-programming course\BasicPointers\src\pointers.h
 
 SimpleTest_Initialize()					// Counters for all tests are reset here
 
