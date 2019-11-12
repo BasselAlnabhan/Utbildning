@@ -1,0 +1,31 @@
+Project Manager’s Check List
+
+Phase 1	Split problem into named parts
+
+Phase 2	Set up project framework in IDE src/test
+		Save in EGit
+
+Phase 3	Produce pseudo code for overall solution including all parts
+		Document as comments in main
+		Define function prototypes in header file
+		Save in EGit
+
+Phase 4	Iterate over each part producing code
+		Implement function code in implementation file
+		Add call to function in main
+		Check input/output for function calls in main
+		If needed use debugger!
+		Save in EGit
+
+Phase 5	Produce tests for each function according to requirement specification
+		Define test data for normal cases input-output
+		Write code for normal tests in test framework
+		Run tests until output is accepted
+		Save in EGit
+
+		Define test data for special cases input-output
+		Write code for special tests in test framework
+		Run tests until output is accepted
+		Save in EGit
+
+Deliver!
