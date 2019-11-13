@@ -24,8 +24,13 @@ int main()
 			{{318,07,52},{318,11,41},{318,12,30},{318,16,12}},
 			{{319,8,03},{319,11,32},{319,12,39},{319,16,07}}}};
 
+	//convert the string to a multidimentional array holds the values
+
 	setbuf(stdout,NULL);
-	flx_ptr = flextime_fill(test_values[0], NO_OF_WEEKS);
-	present_work_week(flx_ptr);
+	//convert the values in the multidimensional array to flextime structures
+	flx_ptr = flextime_fill(test_values);
+	// calculate and present the working time for everyday of every week in the whole period
+	present_work_weeks(flx_ptr);
+
 	return 0;
 }
