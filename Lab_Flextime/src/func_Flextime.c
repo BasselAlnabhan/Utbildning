@@ -7,7 +7,47 @@
 #include <stdlib.h>
 #include "Flextime.h"
 #include <stdio.h>
+#include <string.h>
 
+
+Flextime *get_stamples(char input_string[])
+{
+	Flextime *t;
+	int str_index=0;
+	int needed_structs = count_stamples(input_string);
+	char *structures [needed_structs];
+	char seperate_string[] = {STRING_SEPERATOR, '\0'};
+	char seperate_digits[] = {DIGIT_SEPERATOR, '\0'};
+//	char temp[9];
+//	memcpy(temp,input_string,9);
+//	memset(temp,0,9);
+//	memcpy(temp,input_string+10,9);
+
+	if(DEBUG){printf("DEBUG %d",needed_structs);}
+
+	structures[str_index++] = strtok(input_string, seperate_string);
+
+	for(int i=str_index;i<needed_structs;i++)
+	{
+		structures[i] = strtok(NULL,seperate_string);
+	}
+
+	if( (t  = (Flextime*)malloc(sizeof(Flextime) * needed_structs)) == NULL)
+	{ printf("\n Cannot allocate memory!!!"); }
+
+	for(int flex=0;flex<needed_structs;flex++)
+	{
+		const char *day_no = strtok(structures[flex], seperate_digits);
+		const char *hour = strtok(NULL, seperate_digits);
+		const char *minute = strtok(NULL, seperate_digits);
+		t[flex].day_number = atoi(day_no);
+		t[flex].hour_part = atoi(hour);
+		t[flex].minute_part = atoi(minute);
+
+
+	}
+		return t;
+}
 
 Flextime *flextime_fill(Flextime input[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE])
 {
@@ -57,9 +97,24 @@ void present_work_weeks(Flextime *flx_ptr)
 	}
 
 	for(int i=0;i<NO_OF_DAYS*NO_OF_WEEKS;i++)
-	{working_hours += working_times[i];}
+	{
+		working_hours += working_times[i];
+		if(DEBUG)
+			printf("DEBUG %.2f", working_times[i]);
+	}
 
 	printf("\n\n Period time: %.2f (%.2f)",working_hours,(working_hours-PERIOD_WORKING_HOURS));
 
 	free(flx_ptr);
+}
+
+int count_stamples(char input_string[])
+{
+	int stamples=0,counter=0;
+	do
+	{
+		if(input_string[counter++] == ';')
+			{stamples++;}
+	}while(counter != strlen(input_string));
+	return stamples;
 }
