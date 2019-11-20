@@ -7,45 +7,37 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
+#include <stdbool.h>
 #include "Flextime.h"
+_Bool DEBUG = false;
 
-int main()
+int main(int argc, char **argv)
 {
-	Flextime *flx_ptr,*t;
-//	test_values [NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE] = {
-//			{{{308,07,33},{308,11,44},{308,12,31},{308,16,10}},
-//					{{309,07,52},{309,11,52},{309,12,35},{309,16,18}},
-//					{{310,07,24},{310,11,40},{310,12,30},{310,16,14}},
-//					{{311,07,15},{311,11,38},{311,12,36},{311,16,27}},
-//					{{312,07,12},{312,11,47},{312,12,30},{312,16,12}}},
-//					{{{315,07,12},{315,11,34},{315,12,27},{315,16,52}},
-//					{{316,07,15},{316,11,49},{316,12,31},{316,16,13}},
-//					{{317,07,59},{317,11,44},{317,12,38},{317,16,42}},
-//					{{318,07,52},{318,11,41},{318,12,30},{318,16,12}},
-//					{{319,8,03},{319,11,32},{319,12,39},{319,16,07}}}};
+	TimeStamp *t;
+	WorkTime *wt;
+	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE],file_name[MAX_LENGTH],*name;
 
-	char input_string[] = {"308,07,33;308,11,44;308,12,31;308,16,10;"
-			"309,07,52;309,11,52;309,12,35;309,16,18;"
-			"310,07,24;310,11,40;310,12,30;310,16,14;"
-			"311,07,15;311,11,38;311,12,36;311,16,27;"
-			"312,07,12;312,11,47;312,12,30;312,16,12;"
-			"315,07,12;315,11,34;315,12,27;315,16,52;"
-			"316,07,15;316,11,49;316,12,31;316,16,13;"
-			"317,07,59;317,11,44;317,12,38;317,16,42;"
-		    "318,07,52;318,11,41;318,12,30;318,16,12;"
-			"319,08,03;319,11,32;319,12,39;319,16,07;"};
-
-	//convert the string to a multidimentional array holds flextime structures
-	t = get_stamples(input_string);
-
+	if(argc > 1)
+	{strcpy(file_name, argv[1]);}
+	else {strcpy(file_name, "EK_201_201945.txt");}
+	if(argc > 2)
+	{if(strcmp(argv[2],"DEBUG") == 0) DEBUG = true;}
 	setbuf(stdout,NULL);
 
-	//convert the values in the multidimensional array to flextime structures
-//	flx_ptr = flextime_fill(test_values);
+	// read the file and store in multidimentional array of strings for each timestamp
+	file_read(file_name,content);
 
-	// calculate and present the working time for everyday of every week in the whole period
-	present_work_weeks(t);
+	//convert string array elements to flextime structures
+	t = get_stamples(content);
+
+	// calculate and store work hours info array of output structures
+	wt = convert2work_struct(t);
+	// write working hours to a new file.dat
+	name = output_write(wt,file_name);
+	// read the new file.dat and present the content on console
+	output_file_present(name);
+	free(wt);
 
 	return 0;
 }
