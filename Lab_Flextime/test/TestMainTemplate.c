@@ -15,42 +15,94 @@ SimpleTest_Initialize()					// Counters for all tests are reset here
 /*********************************** Tests ***********************************/
 
 /// supply name of your test as parameter
-SimpleTest_CreateTest(test1)  	// Single test defined
+SimpleTest_CreateTest(readingtest1)  	// Single test defined
 {
 	/// define your test by calling functions from test target
-	char input_string[] = {"308,07,33;308,11,44;308,12,31;308,16,10;"
-			"309,07,52;309,11,52;309,12,35;309,16,18;"
-			"310,07,24;310,11,40;310,12,30;310,16,14;"
-			"311,07,15;311,11,38;311,12,36;311,16,27;"
-			"312,07,12;312,11,47;312,12,30;312,16,12;"
-			"315,07,12;315,11,34;315,12,27;315,16,52;"
-			"316,07,15;316,11,49;316,12,31;316,16,13;"
-			"317,07,59;317,11,44;317,12,38;317,16,42;"
-		    "318,07,52;318,11,41;318,12,30;318,16,12;"
-			"319,08,03;319,11,32;319,12,39;319,16,07;"};
-
+	char filename[] = {"Bjork_209_201945.txt"};
+	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE];
+	file_read(filename,content);
 
 	/// assert that the outcome of your call matches expected outcome
-	SimpleTest_AssertInteger(letters,6,"letters evaluation fault");
+	SimpleTest_AssertString(content[0][4][3],"312,16,12","dismatch in reading");
 
 }
 
 SimpleTest_FinalizeTest()				// End of test
 
+///// supply name of your test as parameter
+//SimpleTest_CreateTest(readingtest2)  	// Single test defined
+//{
+//	/// define your test by calling functions from test target
+//	char filename[] = {"Bjork_209_201945.txt"};
+//	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE];
+//	file_read(filename,content);
+//char SP[] = {' ', '\0'};
+//	/// assert that the outcome of your call matches expected outcome
+//	SimpleTest_AssertString(content[1][4][4],"dismatch in reading");
+//
+//}
+//
+//SimpleTest_FinalizeTest()				// End of test
+
+/// supply name of your test as parameter
+SimpleTest_CreateTest(stamplestest1)  	// Single test defined
+{
+	/// define your test by calling functions from test target
+	char filename[] = {"Bjork_209_201945.txt"};
+	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE];
+	file_read(filename,content);
+	TimeStamp *test= get_stamples(content);
+
+	/// assert that the outcome of your call matches expected outcome
+	SimpleTest_AssertInteger(test[37].day_number,319,"wrong day number");
+
+}
+
+SimpleTest_FinalizeTest()				// End of test
+
+SimpleTest_CreateTest(stamplestest2)  	// Single test defined
+{
+	/// define your test by calling functions from test target
+	char filename[] = {"Bjork_209_201945.txt"};
+	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE];
+	file_read(filename,content);
+	TimeStamp *test= get_stamples(content);
+
+	/// assert that the outcome of your call matches expected outcome
+	SimpleTest_AssertInteger(test[17].minute_part,37,"wrong minute part");
+
+}
+
+SimpleTest_FinalizeTest()				// End of test
+
+/// supply name of your test as parameter
+SimpleTest_CreateTest(worktimetest1)  	// Single test defined
+{
+	/// define your test by calling functions from test target
+	char filename[] = {"Bjork_209_201945.txt"};
+	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE];
+	file_read(filename,content);
+	TimeStamp *test= get_stamples(content);
+WorkTime *wt= convert2work_struct(test);
+	/// assert that the outcome of your call matches expected outcome
+	SimpleTest_AssertTrue((wt[5].time<8.1 && wt[5].time>7.9),"wrong time calculation");
+
+}
+
+SimpleTest_FinalizeTest()				// End of test
 /*********************************** Batch ***********************************/
 
 // This is where we add up all tests to be run
 static char* test_batch()
 {
     /// supply info for presentation of outcome of test batch
-    printf("\n Running tests for %s \n","Cipher_test");
+    printf("\n Running tests for %s \n","FlexTime_test");
 
     /// supply name of each test as parameter
-    SimpleTest_RunTest(letters_test1);	// One test runs
-    SimpleTest_RunTest(letters_test2);	// One test runs
-    SimpleTest_RunTest(digit_test1);	// One test runs
-    SimpleTest_RunTest(digit_test2);	// One test runs
-    SimpleTest_RunTest(space_test1);	// One test runs
+    SimpleTest_RunTest(readingtest1);	// One test runs
+    SimpleTest_RunTest(stamplestest1);	// One test runs
+    SimpleTest_RunTest(stamplestest2);	// One test runs
+    SimpleTest_RunTest(worktimetest1);	// One test runs
     return NULL;
 }
 

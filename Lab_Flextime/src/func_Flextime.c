@@ -1,44 +1,47 @@
 /*
- * func_Flextime.c
- *
- *  Created on: Nov 12, 2019
- *      Author: Bassel Alnabhan
- */
+     .-,--' .          .                 .
+. ,   \|__  |  ,-. . , |- . ,-,-. ,-.    |-.
+-X-    |    |  |-'  X  |  | | | | |-'    | |
+' `   `'    `' `-' ' ` `' ' ' ' ' `-' :; ' '
+
+       ,--.             .        .                ,-,-.
+. ,     | `-' ,-. ,-. ,-. |- ,-. ,-|   ,-. ,-. :;   ` | |   ,-. .  ,    , ,-,      ,-, ,-.  , ,-.
+-X-     |   . |   |-' ,-| |  |-' | |   | | | |        | |-. | | | /    '|  /        /  |/| '| `-|
+' `     `--'  '   `-' `-^ `' `-' `-^   `-' ' ' :;    ,' `-' `-' `'      ` '-` :;   '-` `-'  ` `-'
+                                                                                 '
+             ,.       .  .               ,-,---.                 .       ,.   .          .   .
+. ,         / |   . . |- |-. ,-. ,-. :;   '|___/ ,-. ,-. ,-. ,-. |      / |   |  ,-. ,-. |-. |-. ,-. ,-.
+-X-        /~~|-. | | |  | | | | |        ,|   \ ,-| `-. `-. |-' |     /~~|-. |  | | ,-| | | | | ,-| | |
+' `      ,'   `-' `-^ `' ' ' `-' '   :;  `-^---' `-^ `-' `-' `-' `'  ,'   `-' `' ' ' `-^ ^-' ' ' `-^ ' '
+*/
 #include <stdlib.h>
 #include "Flextime.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
-extern _Bool DEBUG;
+_Bool DEBUG = false;
 
 TimeStamp *get_stamples(char *input[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE])
 {
 	TimeStamp *time_structs;
-	int correction;
-	//	int str_index=0;
+	int correction, dayno_correct = 1;
+
 	int needed_structs = NO_OF_DAYS*NO_OF_WEEKS*TIME_STAMPLE;
-	//	char *structures [needed_structs];
-	//	char seperate_string[] = {STRING_SEPERATOR, '\0'};
+
 	char seperate_digits[] = {DIGIT_SEPERATOR, '\0'};
 
-	//	if(DEBUG){printf("DEBUG counted structs %d\n",needed_structs);}
 
-	//	structures[str_index++] = strtok(input_string, seperate_string);
-	//
-	//	for(int i=str_index;i<needed_structs;i++)
-	//	{
-	//		structures[i] = strtok(NULL,seperate_string);
-	//	}
 	int t_loop=0;
 	if( (time_structs  = (TimeStamp*)malloc(sizeof(TimeStamp) * needed_structs)) == NULL)
 	{ printf("\n Cannot allocate memory!!!"); exit(1);}
 
-	for(int week=0;week<2;week++)
+	for(int week=0;week<NO_OF_WEEKS;week++)
 	{
-		for (int day=0;day<5;day++)
+		for (int day=0;day<NO_OF_DAYS;day++)
 		{
 
-			for(int stamp=0;stamp<4;stamp++)
+			for(int stamp=0;stamp<TIME_STAMPLE;stamp++)
 			{
 				const char *day_no = strtok(input[week][day][stamp], seperate_digits);
 				const char *hour = strtok(NULL, seperate_digits);
@@ -46,95 +49,76 @@ TimeStamp *get_stamples(char *input[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE])
 				time_structs[t_loop].day_number = atoi(day_no);
 				time_structs[t_loop].hour_part = atoi(hour);
 				time_structs[t_loop].minute_part = atoi(minute);
+
 				if(time_structs[t_loop].day_number == 0){
-					if(t_loop%TIME_STAMPLE==0){
-						if(t_loop%(NO_OF_DAYS*TIME_STAMPLE)==0){correction = 3;}
-						else{correction = 1;}
-					}
-					else{
-						time_structs[t_loop].day_number = time_structs[t_loop-1].day_number + correction;
-						time_structs[t_loop].hour_part = FULL_TIME;
-					}
-				}
+								if(t_loop%(NO_OF_DAYS*TIME_STAMPLE)==0)
+								{dayno_correct = correction + FRI_TO_MON;}
+								else{dayno_correct = correction;}
+								time_structs[t_loop].day_number = dayno_correct;
+								if(DEBUG){printf("\nDEBUG day number %d",time_structs[t_loop].day_number);}
+							}
+				correction = time_structs[t_loop].day_number;
 				t_loop++;
 			}
 		}
 	}
-
-
 	return time_structs;
-	free(input);
-}
-
-void flextime_fill(TimeStamp *tp,TimeStamp input[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE])
-{
-	TimeStamp *t;
-	int entries=0;
-	t=tp;
-	for(int weeks=0;weeks<NO_OF_WEEKS;weeks++)
-	{
-		for (int days = 0; days < NO_OF_DAYS; days++)
-		{
-			for(int time_s = 0; time_s < TIME_STAMPLE; time_s++)
-			{
-				input[weeks][days][time_s] = t[entries++];
-			}
-		}
-	}
 }
 
 WorkTime *convert2work_struct(TimeStamp *flx_ptr)
 {
 	float work_pass=0, time_in=0, time_out=0, working_hours=0;
 	int work_pass_index=0,weeks=0;
-	TimeStamp *ft, *w_ptr;
-	WorkTime *wt;
+	TimeStamp *day_ptr, *week_ptr;
+	WorkTime *wrktim;
 
-	if( (wt  = (WorkTime*)malloc(sizeof(WorkTime) * (NO_OF_DAYS*NO_OF_WEEKS))) == NULL)
+	if( (wrktim  = (WorkTime*)malloc(sizeof(WorkTime) * (NO_OF_DAYS*NO_OF_WEEKS))) == NULL)
 			{ printf("\n Cannot allocate memory!!!");}
 
-	for (w_ptr = flx_ptr; weeks<NO_OF_WEEKS; w_ptr+=STAMPLES_PER_WEEK,weeks++)
+	for (week_ptr = flx_ptr; weeks<NO_OF_WEEKS; week_ptr+=STAMPLES_PER_WEEK,weeks++)
 	{
-			for (ft = flx_ptr+(STAMPLES_PER_WEEK*weeks); ft < &flx_ptr[STAMPLES_PER_WEEK*(weeks+1)]; ft+=TIME_STAMPLE)
+			for (day_ptr = week_ptr; day_ptr < &flx_ptr[STAMPLES_PER_WEEK*(weeks+1)]; day_ptr+=TIME_STAMPLE)
 		{
-			wt[work_pass_index].weekNum = weeks+1;
-			wt[work_pass_index].time = 0.0f;                                 // a slight difference if not
+			wrktim[work_pass_index].weekNum = weeks+1;
+			wrktim[work_pass_index].time = 0.0f;                                 // a slight difference without f
 			for(int i=0; i<=In_OUT_STAMPLES; i+=In_OUT_STAMPLES)
 			{
-				time_in = (ft+i)->hour_part + ((((float)(ft+i)->minute_part)*PERCENT)/HOUR_MINUTES)/PERCENT;
-				time_out = (ft+i+1)->hour_part + ((((float)(ft+i+1)->minute_part)*PERCENT)/HOUR_MINUTES)/PERCENT;
+				time_in = (day_ptr+i)->hour_part + ((((float)(day_ptr+i)->minute_part)*PERCENT)/HOUR_MINUTES)/PERCENT;
+				time_out = (day_ptr+i+1)->hour_part + ((((float)(day_ptr+i+1)->minute_part)*PERCENT)/HOUR_MINUTES)/PERCENT;
 				work_pass = time_out - time_in;
-				wt[work_pass_index].time += work_pass;
+				if(work_pass == 0){work_pass = FULL_TIME/In_OUT_STAMPLES;}
+				wrktim[work_pass_index].time += work_pass;
 			}
 
-			wt[work_pass_index++].dayNum = ft->day_number;
+			wrktim[work_pass_index++].dayNum = day_ptr->day_number;
 		}
 	}
 
 	for(int output_counter=0;output_counter<NO_OF_DAYS*NO_OF_WEEKS;output_counter++)
-	{working_hours += wt[output_counter].time;}
+	{working_hours += wrktim[output_counter].time;}
 
 	free(flx_ptr);
-	return wt;
+	return wrktim;
 }
 
 void file_read(char f_path[], char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE])
 {
 	FILE *fptr;
 	char reading_buf[MAX_LENGTH];
-	char *cpnt;
+	char *cpnt, *stample;
+	int stamps=0;
 	if ((fptr = fopen(f_path,"rb")) == NULL)
 	{
 		printf("Error! opening source file");
 		exit(1);
 	}
-	int stamps=0;
+
 	const char stamp_sep[]={STRING_SEPERATOR,'\0'};
-	char *stample;
 	for(int week=0;week<NO_OF_WEEKS;week++){
 		for(int day=0;day<NO_OF_DAYS;day++){
 
 			cpnt =fgets(reading_buf,MAX_LENGTH,fptr);
+
 			if(strlen(cpnt)>STAMP_LENGTH){
 				stamps=0;
 
@@ -143,10 +127,10 @@ void file_read(char f_path[], char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPL
 				strcpy(content[week][day][stamps++],stample);
 
 				for(stamps=1;stamps<TIME_STAMPLE;stamps++){
-					if(strlen(stample)>STAMP_LENGTH-1)
+					if(stample != NULL )
 					{stample = strtok(NULL,stamp_sep);}
+					if(stample != NULL){
 
-					if(strlen(stample)>STAMP_LENGTH-1){
 						content[week][day][stamps]= (char*)malloc(strlen(stample)*sizeof(char));
 						strcpy(content[week][day][stamps],stample);
 					}
@@ -154,12 +138,11 @@ void file_read(char f_path[], char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPL
 				}
 			}
 			else{
-				for(stamps=0;stamps<4;stamps++)
+				for(stamps=0;stamps<TIME_STAMPLE;stamps++)
 				{content[week][day][stamps]=0;}
 			}
 		}
 	}
-	free(cpnt);
 	fclose (fptr);
 }
 
@@ -190,6 +173,7 @@ char *output_write(WorkTime *output_structs,char file_name[])
 	}
 	fwrite(work_times,sizeof(float),10,newfptr);
 	fclose(newfptr);
+	free(output_structs);
 	return file_name;
 }
 
@@ -197,7 +181,7 @@ void output_file_present(char *fname)
 {
 	FILE *dat_file;
 	Employee my_employee;
-	float total_work_time[10]={}, current_work_hours, total_working_hours=0;
+	float total_work_time[NO_OF_DAYS*NO_OF_WEEKS]={}, current_work_hours, total_working_hours=0;
 	int row=0;
 	char name2struct[MAX_LENGTH];
 	strcpy(name2struct,fname);
@@ -228,7 +212,7 @@ void output_file_present(char *fname)
 	{
 		total_working_hours += total_work_time[i];
 		if(DEBUG)
-			printf("DEBUG %.2f", total_work_time[i]);
+			printf("\nDEBUG %.2f", total_work_time[i]);
 	}
 
 	printf("\n\n Period time: %.2f (%.2f)",total_working_hours,(total_working_hours-PERIOD_WORKING_HOURS));

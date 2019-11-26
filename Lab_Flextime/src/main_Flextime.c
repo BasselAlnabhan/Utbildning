@@ -1,21 +1,31 @@
 /*
- * main_Flestime.c
- *
- *  Created on: Nov 12, 2019
- *      Author: Bassel Alnabhan
- */
+     .-,--' .          .                 .
+. ,   \|__  |  ,-. . , |- . ,-,-. ,-.    |-.
+-X-    |    |  |-'  X  |  | | | | |-'    | |
+' `   `'    `' `-' ' ` `' ' ' ' ' `-' :; ' '
+
+       ,--.             .        .                ,-,-.
+. ,     | `-' ,-. ,-. ,-. |- ,-. ,-|   ,-. ,-. :;   ` | |   ,-. .  ,    , ,-,      ,-, ,-.  , ,-.
+-X-     |   . |   |-' ,-| |  |-' | |   | | | |        | |-. | | | /    '|  /        /  |/| '| `-|
+' `     `--'  '   `-' `-^ `' `-' `-^   `-' ' ' :;    ,' `-' `-' `'      ` '-` :;   '-` `-'  ` `-'
+                                                                                 '
+             ,.       .  .               ,-,---.                 .       ,.   .          .   .
+. ,         / |   . . |- |-. ,-. ,-. :;   '|___/ ,-. ,-. ,-. ,-. |      / |   |  ,-. ,-. |-. |-. ,-. ,-.
+-X-        /~~|-. | | |  | | | | |        ,|   \ ,-| `-. `-. |-' |     /~~|-. |  | | ,-| | | | | ,-| | |
+' `      ,'   `-' `-^ `' ' ' `-' '   :;  `-^---' `-^ `-' `-' `-' `'  ,'   `-' `' ' ' `-^ ^-' ' ' `-^ ' '
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "Flextime.h"
-_Bool DEBUG = false;
+extern _Bool DEBUG;
 
 int main(int argc, char **argv)
 {
-	TimeStamp *t;
-	WorkTime *wt;
+	TimeStamp *times;
+	WorkTime *work_times;
 	char *content[NO_OF_WEEKS][NO_OF_DAYS][TIME_STAMPLE],file_name[MAX_LENGTH],*name;
 
 	if(argc > 1)
@@ -29,15 +39,16 @@ int main(int argc, char **argv)
 	file_read(file_name,content);
 
 	//convert string array elements to flextime structures
-	t = get_stamples(content);
+	times = get_stamples(content);
 
 	// calculate and store work hours info array of output structures
-	wt = convert2work_struct(t);
+	work_times = convert2work_struct(times);
+
 	// write working hours to a new file.dat
-	name = output_write(wt,file_name);
+	name = output_write(work_times,file_name);
+
 	// read the new file.dat and present the content on console
 	output_file_present(name);
-	free(wt);
 
 	return 0;
 }
